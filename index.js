@@ -1,8 +1,11 @@
+const fs = require('fs');
 const http = require('http');
+const https = require('https');
 
-const url = 'http://10.128.0.62:9200/_security/_authenticate';
+const url = 'https://elasticsearch:9200/_security/_authenticate';
+const ca = fs.readFileSync('certs/ca/ca.crt');
 const method = 'GET';
-const agent = new http.Agent({
+const agent = new https.Agent({
 	keepAlive: true,
 	keepAliveMsecs: 1000,
 	maxSockets: Infinity,
@@ -10,12 +13,13 @@ const agent = new http.Agent({
 });
 const requestListener = function (inReq, inRes) {
   const request = http.request(url, {
+	ca,
 	agent,
         method,
         headers: { 
-            'Authorization': 'Basic ZWxhc3RpYzpjaGFuZ2VtZQ==',
+            'Authorization': inReq.headers.authorization,
         },
-        rejectUnauthorized: false
+        rejectUnauthorized: true
     }, function (response) {
 	let data = '';
 	response.on('data', (chunk) => data += chunk);
