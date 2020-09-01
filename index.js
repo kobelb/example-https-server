@@ -26,7 +26,7 @@ const requestListener = function (inReq, inRes) {
     });
 
    request.on('error', (error) => {
-	   console.log('error');
+	   console.error(error);
 	   inRes.writeHead(500);
 	   inRes.end(error.message);
     });
@@ -35,5 +35,5 @@ const requestListener = function (inReq, inRes) {
 }
 
 const server = http.createServer(requestListener);
-server.listen(3000);
+server.listen(3000, '0.0.0.0', 50000);
 
