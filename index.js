@@ -1,9 +1,10 @@
 const fs = require('fs');
-const http = require('http');
 const https = require('https');
 
 const url = 'https://elasticsearch:9200/_security/_authenticate';
 const ca = fs.readFileSync('certs/ca/ca.crt');
+const cert = fs.readFileSync('certs/kibana/kibana.crt');
+const key = fs.readFileSync('certs/kibana/kibana.key');
 const method = 'GET';
 const agent = new https.Agent({
 	keepAlive: true,
@@ -12,7 +13,7 @@ const agent = new https.Agent({
 	maxFreeSockets: 256,
 });
 const requestListener = function (inReq, inRes) {
-  const request = http.request(url, {
+  const request = https.request(url, {
 	ca,
 	agent,
         method,
@@ -38,6 +39,9 @@ const requestListener = function (inReq, inRes) {
 
 }
 
-const server = http.createServer(requestListener);
+const server = https.createServer({
+  cert,
+  key,
+}, requestListener);
 server.listen(3000, '0.0.0.0', 50000);
 
