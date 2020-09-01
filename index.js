@@ -12,7 +12,13 @@ const agent = new https.Agent({
 	maxSockets: Infinity,
 	maxFreeSockets: 256,
 });
+const doSomething = function (ms) {
+  const start = new Date();
+  while(new Date() - start < ms) {}
+};
+
 const requestListener = function (inReq, inRes) {
+  doSomething(1);
   const request = https.request(url, {
 	ca,
 	agent,
@@ -25,6 +31,7 @@ const requestListener = function (inReq, inRes) {
 	let data = '';
 	response.on('data', (chunk) => data += chunk);
         response.on('end', () => {
+	    doSomething(1);
 	    inRes.writeHead(response.statusCode);
 	    inRes.end(data);
         });
